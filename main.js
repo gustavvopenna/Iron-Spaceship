@@ -5,11 +5,14 @@
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 let background = 'media/background.png'
-let carImg1 = 'media/smallorange.png'
+let carImg1 = 'media/pixel-vector-alien-ship-4.png'
 let carImg2 = 'media/car2.png'
 let obsImg1 = 'media/asteroid.png'
+let rewardImg = 'media/Cartoon-Gold-Star.png'
 
 let obstaclesArr = []
+let rewardsArr = []
+let score = 0
 
 
 
@@ -58,8 +61,14 @@ class Vehicle {
   isTouching(obstacle) {
     return  (this.x < obstacle.x + obstacle.width) &&
             (this.x + this.width > obstacle.x) &&
-            (this.y < obstacle.y + obstacle.width) &&
-            (this.y + this.width > obstacle.y)
+            (this.y < obstacle.y + obstacle.height) &&
+            (this.y + this.height > obstacle.y)
+  }
+  isTouchingReward(reward) {
+    return  (this.x < reward.x + reward.width) &&
+            (this.x + this.width > reward.x) &&
+            (this.y < reward.y + reward.height) &&
+            (this.y + this.height > reward.y)
   }
 }
 
@@ -71,6 +80,22 @@ class Obstacle {
     this.height = 10
     this.img = new Image()
     this.img.src = obsImg1
+  }
+  draw() {
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
+    this.y++
+  }
+}
+
+class Reward {
+  constructor(x) {
+    this.x = x
+    this.y = 0
+    this.width = 10
+    this.height = 10
+    this.img = new Image()
+    this.img.src = rewardImg
+    this.status = 1
   }
   draw() {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
@@ -103,6 +128,9 @@ function update() {
   generateObstacles()
   drawObstacles()
   checkCollition()
+  generateRewards()
+  drawRewards()
+  checkCollitionRewards()
   frames++
   //console.log(frames)
 }
@@ -110,6 +138,11 @@ function update() {
 function startGame() {
   if(interval) return
   interval = setInterval(update, 1000/60)//Estos son los FPS que se dibujan por segundo  
+}
+
+function gameOver() {
+  clearInterval(interval)
+  console.log('GAME OOOOOVVVVVEEEEEER')
 }
 
 //Que evento queremos escuchar
@@ -129,10 +162,11 @@ document.addEventListener('keydown', (e) => {
 // ------------------- HELPER FUNCTIONS---------------------
 // ---------------------------------------------------------
 
+// -----OBSTACLES------
 function generateObstacles() {
   let carWidth = 30
   let randomWidth = Math.floor(Math.random() * canvas.width - carWidth)
-  if (frames % 90 === 0) {
+  if (frames % 30 === 0) {
     let obs1 = new Obstacle(randomWidth)
     obstaclesArr.push(obs1)
     //console.log(obstaclesArr)
@@ -148,6 +182,34 @@ function drawObstacles() {
 
 function checkCollition() {
   obstaclesArr.forEach((obstacle) => {
-    if(car.isTouching(obstacle)) console.log('IS TOUUUUCHING!!!')
+    if(car.isTouching(obstacle)) gameOver()
+  })
+}
+
+// ----- REWARDS ------
+
+function generateRewards() {
+  let carWidth = 30
+  let randomWidth = Math.floor(Math.random() * canvas.width - carWidth)
+  if (frames % 100 === 0) {
+    let reward1 = new Reward(randomWidth)
+    rewardsArr.push(reward1)
+    //console.log(rewardsArr)
+  }
+}
+
+function drawRewards() {
+  rewardsArr.forEach((reward) => {
+    if(reward.status === 1) reward.draw()
+  })
+}
+
+function checkCollitionRewards() {
+  rewardsArr.forEach((reward) => {
+    if(car.isTouchingReward(reward) && reward.status === 1) {
+      ctx.clearRect(reward.x, reward.y, reward.width, reward.height)
+      reward.status = 0
+      console.log(score++)
+    }
   })
 }
