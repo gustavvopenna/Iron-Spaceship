@@ -4,9 +4,12 @@
 
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
-let background = 'media/backdrop.png'
-let carImg1 = 'media/car1.png'
+let background = 'media/background.png'
+let carImg1 = 'media/smallorange.png'
 let carImg2 = 'media/car2.png'
+let obsImg1 = 'media/asteroid.png'
+
+let obstaclesArr = []
 
 
 
@@ -47,12 +50,31 @@ class Vehicle {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
   }
   moveRight() {
-    console.log('que pedo derecha')
-    this.x += 10
+    if(this.x < canvas.width - 43) this.x += 10
   }
   moveLeft() {
-    console.log('que pedo izquierda')
-    this.x -= 10
+    if(this.x > 10) this.x -= 10
+  }
+  isTouching(obstacle) {
+    return  (this.x < obstacle.x + obstacle.width) &&
+            (this.x + this.width > obstacle.x) &&
+            (this.y < obstacle.y + obstacle.width) &&
+            (this.y + this.width > obstacle.y)
+  }
+}
+
+class Obstacle {
+  constructor(x) {
+    this.x = x
+    this.y = 0
+    this.width = 20
+    this.height = 10
+    this.img = new Image()
+    this.img.src = obsImg1
+  }
+  draw() {
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
+    this.y++
   }
 }
 
@@ -78,6 +100,9 @@ function update() {
   //Despues dibujamos el canvas
   board.draw()
   car.draw()
+  generateObstacles()
+  drawObstacles()
+  checkCollition()
   frames++
   //console.log(frames)
 }
@@ -103,3 +128,26 @@ document.addEventListener('keydown', (e) => {
 // ---------------------------------------------------------
 // ------------------- HELPER FUNCTIONS---------------------
 // ---------------------------------------------------------
+
+function generateObstacles() {
+  let carWidth = 30
+  let randomWidth = Math.floor(Math.random() * canvas.width - carWidth)
+  if (frames % 90 === 0) {
+    let obs1 = new Obstacle(randomWidth)
+    obstaclesArr.push(obs1)
+    //console.log(obstaclesArr)
+  }
+}
+
+function drawObstacles() {
+  obstaclesArr.forEach((obstacle) => {
+    obstacle.draw()
+    //console.log(' drawwwww obstacle')
+  })
+}
+
+function checkCollition() {
+  obstaclesArr.forEach((obstacle) => {
+    if(car.isTouching(obstacle)) console.log('IS TOUUUUCHING!!!')
+  })
+}
