@@ -14,6 +14,10 @@ let obstaclesArr = []
 let rewardsArr = []
 let score = 0
 
+const friction = 0.8
+let gameStarted = false
+const keys = []
+
 
 
 // ---------------------------------------------------------
@@ -48,6 +52,10 @@ class Vehicle {
     this.height = 15
     this.img = new Image()
     this.img.src = img
+    
+    this.speed = 5
+    this.velX = 0
+    this.velY = 0
   }
   draw() {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
@@ -133,6 +141,24 @@ function update() {
   checkCollitionRewards()
   frames++
   //console.log(frames)
+
+  if (keys[39]) {
+    if (car.velX < car.speed) {
+      car.velX++
+      console.log(car.velX)
+    }
+  }
+
+  if (keys[37]) {
+    if (car.velX > -car.speed) {
+      car.velX--
+      console.log(car.velX)
+    }
+  }
+
+    //movimiento
+    car.x += car.velX
+    car.velX *= friction
 }
 
 function startGame() {
@@ -144,6 +170,10 @@ function gameOver() {
   clearInterval(interval)
   console.log('GAME OOOOOVVVVVEEEEEER')
 }
+
+// ---------------------------------------------------------
+// ----------------------- LISTENERS -----------------------
+// ---------------------------------------------------------
 
 //Que evento queremos escuchar
 document.addEventListener('keydown', (e) => {
@@ -157,6 +187,20 @@ document.addEventListener('keydown', (e) => {
       return car.moveLeft()
     }
 })
+
+document.body.addEventListener('keydown', e => {
+  if (e.keyCode == 13 && !gameStarted) {
+    startGame()
+  }
+  //para movimiento
+  keys[e.keyCode] = true
+})
+
+//para movimiento
+document.body.addEventListener('keyup', e => {
+  keys[e.keyCode] = false
+})
+
 
 // ---------------------------------------------------------
 // ------------------- HELPER FUNCTIONS---------------------
