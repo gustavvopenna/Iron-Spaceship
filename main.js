@@ -1,3 +1,8 @@
+let scoreDisplay1 = document.getElementById('score-player-1')
+let scoreDisplay2 = document.getElementById('score-player-2')
+let playerScoreButton = document.getElementById('player2-button')
+console.log(playerScoreButton)
+
 // ---------------------------------------------------------
 // ------------------ GLOBAL VARIABLES----------------------
 // ---------------------------------------------------------
@@ -5,14 +10,15 @@
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 let background = 'media/background.png'
-let carImg1 = 'media/pixel-vector-alien-ship-4.png'
+let carImg1 = 'media/imgSaul/player-orange-2.png'
 let carImg2 = 'media/car2.png'
 let obsImg1 = 'media/asteroid.png'
 let rewardImg = 'media/Cartoon-Gold-Star.png'
 
 let obstaclesArr = []
 let rewardsArr = []
-let score = 0
+let score1 = 0
+let score2 = 0
 
 const friction = 0.8
 let gameStarted = false
@@ -35,6 +41,8 @@ class Board {
     this.img.onload = () => {
       this.draw()
     }
+
+    this.player = 1
   }
   draw() {
     if(this.y > this.height) this.y = 0
@@ -47,9 +55,9 @@ class Board {
 class Vehicle {
   constructor(img) {
     this.x = canvas.width / 2.2
-    this.y = canvas.height - 20
-    this.width = 30
-    this.height = 15
+    this.y = canvas.height - 50
+    this.width = 60
+    this.height = 30
     this.img = new Image()
     this.img.src = img
     
@@ -84,10 +92,13 @@ class Obstacle {
   constructor(x) {
     this.x = x
     this.y = 0
-    this.width = 20
-    this.height = 10
+    this.width = 60
+    this.height = 40
     this.img = new Image()
     this.img.src = obsImg1
+
+    this.speed = 1
+    this.velY = 0
   }
   draw() {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
@@ -99,11 +110,14 @@ class Reward {
   constructor(x) {
     this.x = x
     this.y = 0
-    this.width = 10
-    this.height = 10
+    this.width = 25
+    this.height = 25
     this.img = new Image()
     this.img.src = rewardImg
     this.status = 1
+
+    this.speed = 1
+    this.velY = 0
   }
   draw() {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
@@ -130,7 +144,6 @@ let interval
 function update() {
   //primero siempre borramos el board
   ctx.clearRect(0, 0, canvas.width, canvas.height)
-  //Despues dibujamos el canvas
   board.draw()
   car.draw()
   generateObstacles()
@@ -140,25 +153,23 @@ function update() {
   drawRewards()
   checkCollitionRewards()
   frames++
-  //console.log(frames)
 
+  // Vehicles Speed
   if (keys[39]) {
     if (car.velX < car.speed) {
       car.velX++
-      console.log(car.velX)
     }
   }
 
   if (keys[37]) {
     if (car.velX > -car.speed) {
       car.velX--
-      console.log(car.velX)
     }
   }
 
-    //movimiento
-    car.x += car.velX
-    car.velX *= friction
+  //Vehicles movimiento
+  car.x += car.velX
+  car.velX *= friction
 }
 
 function startGame() {
@@ -169,6 +180,10 @@ function startGame() {
 function gameOver() {
   clearInterval(interval)
   console.log('GAME OOOOOVVVVVEEEEEER')
+}
+
+function reload(){
+  window.location.reload(false);
 }
 
 // ---------------------------------------------------------
@@ -201,6 +216,14 @@ document.body.addEventListener('keyup', e => {
   keys[e.keyCode] = false
 })
 
+//Para el player 2
+// playerScoreButton.addEventListener('click', e => {
+//   console.log('butttttooooooooon')
+//   startGame()
+//   board.player = 2
+// })
+playerScoreButton.addEventListener("click", reload);
+
 
 // ---------------------------------------------------------
 // ------------------- HELPER FUNCTIONS---------------------
@@ -210,7 +233,7 @@ document.body.addEventListener('keyup', e => {
 function generateObstacles() {
   let carWidth = 30
   let randomWidth = Math.floor(Math.random() * canvas.width - carWidth)
-  if (frames % 30 === 0) {
+  if (frames % 40 === 0) {
     let obs1 = new Obstacle(randomWidth)
     obstaclesArr.push(obs1)
     //console.log(obstaclesArr)
@@ -220,7 +243,11 @@ function generateObstacles() {
 function drawObstacles() {
   obstaclesArr.forEach((obstacle) => {
     obstacle.draw()
-    //console.log(' drawwwww obstacle')
+
+    //Obstacle movimiento
+    obstacle.velY++
+    obstacle.y += obstacle.velY
+    obstacle.velY *= friction
   })
 }
 
@@ -245,15 +272,26 @@ function generateRewards() {
 function drawRewards() {
   rewardsArr.forEach((reward) => {
     if(reward.status === 1) reward.draw()
+
+    //Reward movimiento
+    reward.velY++
+    reward.y += reward.velY
+    reward.velY *= friction
   })
 }
 
 function checkCollitionRewards() {
   rewardsArr.forEach((reward) => {
     if(car.isTouchingReward(reward) && reward.status === 1) {
-      ctx.clearRect(reward.x, reward.y, reward.width, reward.height)
       reward.status = 0
-      console.log(score++)
+
+      //Change score on every catch
+      if(board.player === 1) {
+        score1++
+        scoreDisplay1.innerHTML = score1
+      } else if (board.player === 2) {
+        scoreDisplay2.innerHTML = score2
+      }
     }
   })
 }
