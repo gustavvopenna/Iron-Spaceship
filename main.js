@@ -15,10 +15,12 @@ let carImg2 = 'media/car2.png'
 let obsImg1 = 'media/asteroid.png'
 let rewardImg = 'media/Cartoon-Gold-Star.png'
 let supplieImg = 'media/gem.png'
+let bulletImg = 'media/imgSaul/laser-red-5.png'
 
 let obstaclesArr = []
 let rewardsArr = []
 let suppliesArr = []
+let shootsArr = []
 
 let score1 = 0
 let score2 = 0
@@ -147,6 +149,25 @@ class Supplie {
   }
 }
 
+class Bullet {
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+    this.width = 8
+    this.height = 25
+    this.img = new Image()
+    this.img.src = bulletImg
+    this.status = 1
+
+    this.speed = 1
+    this.velY = 0
+  }
+  draw() {
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
+    this.y--
+  }
+}
+
 // ---------------------------------------------------------
 // ---------------------- INSTANCIAS -----------------------
 // ---------------------------------------------------------
@@ -177,6 +198,8 @@ function update() {
   generateSupplies()
   drawSupplies()
   checkCollitionSupplies()
+  
+  drawBullets()
   frames++
 
   // Vehicles Speed
@@ -189,6 +212,12 @@ function update() {
   if (keys[37]) {
     if (car.velX > -car.speed) {
       car.velX--
+    }
+  }
+
+  if(keys[83]) {
+    if(frames%5 === 0) {
+      return generateBullets(car.x + car.width -33, car.y - 20)
     }
   }
 
@@ -329,7 +358,7 @@ function generateSupplies() {
   if (frames % 180 === 0) {
     let supplie1 = new Supplie(randomWidth)
     suppliesArr.push(supplie1)
-    //console.log(rewardsArr)
+    console.log(suppliesArr)
   }
 }
 
@@ -360,5 +389,24 @@ function checkCollitionSupplies() {
     }
   })
 }
+
+// ----- BULLETS ------
+
+function generateBullets(x, y) {
+  const bullet = new Bullet(x, y)
+  shootsArr.push(bullet)
+}
+
+function drawBullets() {
+  shootsArr.forEach((shoot) => {
+    shoot.draw()
+
+    //Obstacle movimiento
+    shoot.velY--
+    shoot.y += shoot.velY
+    shoot.velY *= friction
+  })
+}
+
 
 
