@@ -80,10 +80,10 @@ class Vehicle {
     if(this.x > 10) this.x -= 10
   }
   isTouching(obstacle) {
-    return  (this.x < obstacle.x + obstacle.width) &&
-            (this.x + this.width > obstacle.x) &&
-            (this.y < obstacle.y + obstacle.height) &&
-            (this.y + this.height > obstacle.y)
+    return  (this.x < obstacle.x + obstacle.width - 10) &&
+            (this.x + this.width > obstacle.x + 10) &&
+            (this.y < obstacle.y + obstacle.height - 20) &&
+            (this.y + this.height > obstacle.y + 10)
   }
   isTouchingReward(reward) {
     return  (this.x < reward.x + reward.width) &&
