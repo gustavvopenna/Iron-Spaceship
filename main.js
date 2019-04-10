@@ -101,6 +101,7 @@ class Obstacle {
     this.height = 40
     this.img = new Image()
     this.img.src = obsImg1
+    this.status = 1
 
     this.speed = 1
     this.velY = 0
@@ -108,6 +109,12 @@ class Obstacle {
   draw() {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
     this.y++
+  }
+  isTouching(bullet) {
+    return  (this.x < bullet.x + bullet.width) &&
+            (this.x + this.width > bullet.x) &&
+            (this.y < bullet.y + bullet.height) &&
+            (this.y + this.height > bullet.y)
   }
 }
 
@@ -166,6 +173,12 @@ class Bullet {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
     this.y--
   }
+  // isTouching(reward) {
+  //   return  (this.x < reward.x + reward.width) &&
+  //           (this.x + this.width > reward.x) &&
+  //           (this.y < reward.y + reward.height) &&
+  //           (this.y + this.height > reward.y)
+  // }
 }
 
 // ---------------------------------------------------------
@@ -200,6 +213,7 @@ function update() {
   checkCollitionSupplies()
   
   drawBullets()
+  checkCollitionBullets()
   frames++
 
   // Vehicles Speed
@@ -287,7 +301,7 @@ playerScoreButton.addEventListener("click", reload);
 function generateObstacles() {
   let carWidth = 30
   let randomWidth = Math.floor(Math.random() * canvas.width - carWidth)
-  if (frames % 40 === 0) {
+  if (frames % 30 === 0) {
     let obs1 = new Obstacle(randomWidth)
     obstaclesArr.push(obs1)
     //console.log(obstaclesArr)
@@ -296,7 +310,7 @@ function generateObstacles() {
 
 function drawObstacles() {
   obstaclesArr.forEach((obstacle) => {
-    obstacle.draw()
+    if(obstacle.status === 1) obstacle.draw()
 
     //Obstacle movimiento
     obstacle.velY++
@@ -307,7 +321,11 @@ function drawObstacles() {
 
 function checkCollition() {
   obstaclesArr.forEach((obstacle) => {
-    if(car.isTouching(obstacle)) gameOver()
+    if(car.isTouching(obstacle)&& obstacle.status === 1) {
+      gameOver()
+      console.log('Colision de obstaculo con nave')
+      console.log(obstacle,car)
+    }
   })
 }
 
@@ -338,6 +356,7 @@ function checkCollitionRewards() {
   rewardsArr.forEach((reward) => {
     if(car.isTouchingReward(reward) && reward.status === 1) {
       reward.status = 0
+      console.log('Colision de reward con nave')
 
       //Change score on every catch
       if(board.player === 1) {
@@ -358,7 +377,6 @@ function generateSupplies() {
   if (frames % 180 === 0) {
     let supplie1 = new Supplie(randomWidth)
     suppliesArr.push(supplie1)
-    console.log(suppliesArr)
   }
 }
 
@@ -377,7 +395,8 @@ function checkCollitionSupplies() {
   suppliesArr.forEach((supplie) => {
     if(car.isTouchingReward(supplie) && supplie.status === 1) {
       supplie.status = 0
-      return true
+      console.log('Colision de suplies con nave')
+      //return true
 
       //Change score on every catch
       // if(board.player === 1) {
@@ -399,12 +418,24 @@ function generateBullets(x, y) {
 
 function drawBullets() {
   shootsArr.forEach((shoot) => {
-    shoot.draw()
+    if(shoot.status === 1) shoot.draw()
 
     //Obstacle movimiento
     shoot.velY--
     shoot.y += shoot.velY
     shoot.velY *= friction
+  })
+}
+
+function checkCollitionBullets() {
+  shootsArr.forEach((shoot) => {
+    obstaclesArr.forEach((obstacle) => {
+      if(obstacle.isTouching(shoot) && obstacle.status === 1 && shoot.status === 1) {
+        obstacle.status = 0
+        shoot.status = 0
+        console.log('OBSTACLE DESTROYED!!!')
+      }
+    })
   })
 }
 
