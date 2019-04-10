@@ -14,9 +14,12 @@ let carImg1 = 'media/imgSaul/player-orange-2.png'
 let carImg2 = 'media/car2.png'
 let obsImg1 = 'media/asteroid.png'
 let rewardImg = 'media/Cartoon-Gold-Star.png'
+let supplieImg = 'media/gem.png'
 
 let obstaclesArr = []
 let rewardsArr = []
+let suppliesArr = []
+
 let score1 = 0
 let score2 = 0
 
@@ -125,6 +128,25 @@ class Reward {
   }
 }
 
+class Supplie {
+  constructor(x) {
+    this.x = x
+    this.y = 0
+    this.width = 25
+    this.height = 25
+    this.img = new Image()
+    this.img.src = supplieImg
+    this.status = 1
+
+    this.speed = 1
+    this.velY = 0
+  }
+  draw() {
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
+    this.y++
+  }
+}
+
 // ---------------------------------------------------------
 // ---------------------- INSTANCIAS -----------------------
 // ---------------------------------------------------------
@@ -152,6 +174,9 @@ function update() {
   generateRewards()
   drawRewards()
   checkCollitionRewards()
+  generateSupplies()
+  drawSupplies()
+  checkCollitionSupplies()
   frames++
 
   // Vehicles Speed
@@ -295,3 +320,45 @@ function checkCollitionRewards() {
     }
   })
 }
+
+// ----- SUPPLIES ------
+
+function generateSupplies() {
+  let carWidth = 30
+  let randomWidth = Math.floor(Math.random() * canvas.width - carWidth)
+  if (frames % 180 === 0) {
+    let supplie1 = new Supplie(randomWidth)
+    suppliesArr.push(supplie1)
+    //console.log(rewardsArr)
+  }
+}
+
+function drawSupplies() {
+  suppliesArr.forEach((supplie) => {
+    if(supplie.status === 1) supplie.draw()
+
+    //Reward movimiento
+    supplie.velY++
+    supplie.y += supplie.velY
+    supplie.velY *= friction
+  })
+}
+
+function checkCollitionSupplies() {
+  suppliesArr.forEach((supplie) => {
+    if(car.isTouchingReward(supplie) && supplie.status === 1) {
+      supplie.status = 0
+      return true
+
+      //Change score on every catch
+      // if(board.player === 1) {
+      //   score1++
+      //   scoreDisplay1.innerHTML = score1
+      // } else if (board.player === 2) {
+      //   scoreDisplay2.innerHTML = score2
+      // }
+    }
+  })
+}
+
+
