@@ -11,7 +11,7 @@ const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 let background = 'media/background.png'
 let carImg1 = 'media/imgSaul/player-orange-2.png'
-let carImg2 = 'media/car2.png'
+let carImg2 = 'media/imgSaul/enemy-green-1.png'
 let obsImg1 = 'media/asteroid.png'
 let rewardImg = 'media/Cartoon-Gold-Star.png'
 let supplieImg = 'media/gem.png'
@@ -58,9 +58,11 @@ class Board {
 }
 
 class Vehicle {
-  constructor(img) {
-    this.x = canvas.width / 2.2
-    this.y = canvas.height - 50
+  constructor(img, x, y) {
+    this.x = x
+    this.y = y
+    // this.x = canvas.width / 2.2
+    // this.y = canvas.height - 50
     this.width = 60
     this.height = 30
     this.img = new Image()
@@ -192,7 +194,11 @@ class Bullet {
 // ---------------------------------------------------------
 
 const board = new Board(background)
-const car = new Vehicle(carImg1)
+const car = new Vehicle(carImg1, canvas.width / 2.2, canvas.height - 50)
+const spaceship2 = new Vehicle(carImg2, canvas.width / 2.2, canvas.height - 300)
+
+// this.x = canvas.width / 2.2
+    // this.y = canvas.height - 50
 
 
 // ---------------------------------------------------------
@@ -208,6 +214,7 @@ function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   board.draw()
   car.draw()
+  spaceship2.draw()
   generateObstacles()
   drawObstacles()
   checkCollition()
@@ -222,7 +229,7 @@ function update() {
   checkCollitionBullets()
   frames++
 
-  // Vehicles Speed
+  // Spaceship1 *car*
   if (keys[39]) {
     if (car.velX < car.speed) {
       car.velX++
@@ -247,9 +254,40 @@ function update() {
     }
   }
 
-  if(keys[83]) {
+  if(keys[16]) {
     if(frames%5 === 0) {
-      return generateBullets(car.x + car.width -33, car.y - 20)
+      return generateBullets(car.x + car.width - 33, car.y - 20)
+    }
+  }
+
+  // Spaceship2 
+  if (keys[68]) {
+    if (spaceship2.velX < spaceship2.speed) {
+      spaceship2.velX++
+    }
+  }
+
+  if (keys[65]) {
+    if (spaceship2.velX > -spaceship2.speed) {
+      spaceship2.velX--
+    }
+  }
+
+  if (keys[83]) {
+    if (spaceship2.velY < spaceship2.speed) {
+      spaceship2.velY++
+    }
+  }
+
+  if (keys[87]) {
+    if (spaceship2.velY > -spaceship2.speed) {
+      spaceship2.velY--
+    }
+  }
+
+  if(keys[86]) {
+    if(frames%5 === 0) {
+      return generateBullets(spaceship2.x + spaceship2.width - 33, spaceship2.y - 20)
     }
   }
 
@@ -259,6 +297,12 @@ function update() {
 
   car.y += car.velY
   car.velY *= friction
+
+  spaceship2.x += spaceship2.velX
+  spaceship2.velX *= friction
+
+  spaceship2.y += spaceship2.velY
+  spaceship2.velY *= friction
 }
 
 function startGame() {
@@ -293,6 +337,15 @@ document.addEventListener('keydown', (e) => {
       return car.moveUp()
     case 40:
       return car.moveDown()
+    case 68:
+      return spaceship2.moveRight()
+    case 65:
+      return spaceship2.moveLeft()
+    case 87:
+      return spaceship2.moveUp()
+    case 83:
+      return spaceship2.moveDown()
+
     }
 })
 
@@ -346,7 +399,7 @@ function drawObstacles() {
 
 function checkCollition() {
   obstaclesArr.forEach((obstacle) => {
-    if(car.isTouching(obstacle)&& obstacle.status === 1) {
+    if(car.isTouching(obstacle)&& obstacle.status === 1 || spaceship2.isTouching(obstacle)&& obstacle.status === 1 ) {
       gameOver()
       console.log('Colision de obstaculo con nave')
       console.log(obstacle,car)
@@ -379,7 +432,7 @@ function drawRewards() {
 
 function checkCollitionRewards() {
   rewardsArr.forEach((reward) => {
-    if(car.isTouchingReward(reward) && reward.status === 1) {
+    if(car.isTouchingReward(reward) && reward.status === 1 || spaceship2.isTouchingReward(reward) && reward.status === 1) {
       reward.status = 0
       console.log('Colision de reward con nave')
 
@@ -418,7 +471,7 @@ function drawSupplies() {
 
 function checkCollitionSupplies() {
   suppliesArr.forEach((supplie) => {
-    if(car.isTouchingReward(supplie) && supplie.status === 1) {
+    if(car.isTouchingReward(supplie) && supplie.status === 1 || spaceship2.isTouchingReward(supplie) && supplie.status === 1) {
       supplie.status = 0
       console.log('Colision de suplies con nave')
       //return true
