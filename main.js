@@ -74,10 +74,16 @@ class Vehicle {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
   }
   moveRight() {
-    if(this.x < canvas.width - 43) this.x += 10
+    if(this.x < canvas.width - 70) this.x += 10
   }
   moveLeft() {
-    if(this.x > 10) this.x -= 10
+    if(this.x > 70) this.x -= 10
+  }
+  moveUp() {
+    this.y -=10
+  }
+  moveDown() {
+    this.y += 10
   }
   isTouching(obstacle) {
     return  (this.x < obstacle.x + obstacle.width - 10) &&
@@ -229,6 +235,18 @@ function update() {
     }
   }
 
+  if (keys[40]) {
+    if (car.velY < car.speed) {
+      car.velY++
+    }
+  }
+
+  if (keys[38]) {
+    if (car.velY > -car.speed) {
+      car.velY--
+    }
+  }
+
   if(keys[83]) {
     if(frames%5 === 0) {
       return generateBullets(car.x + car.width -33, car.y - 20)
@@ -238,6 +256,9 @@ function update() {
   //Vehicles movimiento
   car.x += car.velX
   car.velX *= friction
+
+  car.y += car.velY
+  car.velY *= friction
 }
 
 function startGame() {
@@ -268,6 +289,10 @@ document.addEventListener('keydown', (e) => {
       return car.moveRight()
     case 37:
       return car.moveLeft()
+    case 38:
+      return car.moveUp()
+    case 40:
+      return car.moveDown()
     }
 })
 
