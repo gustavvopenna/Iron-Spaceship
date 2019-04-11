@@ -23,7 +23,7 @@ let suppliesArr = []
 let shootsArr = []
 
 let score1 = 0
-let score2 = 0
+let score2 = 0 //Quitarlo
 
 const friction = 0.8
 let gameStarted = false
@@ -46,7 +46,9 @@ class Board {
     this.img.onload = () => {
       this.draw()
     }
-
+    this.audio = new Audio()
+    this.audio.src = 'media/Space-Battle.mp3'
+    this.audio.loop = true
     this.player = 1
   }
   draw() {
@@ -67,6 +69,14 @@ class Vehicle {
     this.height = 30
     this.img = new Image()
     this.img.src = img
+
+    this.audio = new Audio()
+    this.audio.src = 'media/Explosion.mp3'
+
+    this.audioBullet = new Audio()
+    this.audioBullet.src = 'media/laser.mp3'
+    this.audioBullet.loop = true
+
     
     this.speed = 5
     this.velX = 0
@@ -174,6 +184,9 @@ class Bullet {
     this.img.src = bulletImg
     this.status = 1
 
+    this.audio = new Audio()
+    this.audio.src = 'media/Magnum.mp3'
+
     this.speed = 1
     this.velY = 0
   }
@@ -256,6 +269,7 @@ function update() {
 
   if(keys[16]) {
     if(frames%5 === 0) {
+      car.audioBullet.play()
       return generateBullets(car.x + car.width - 33, car.y - 20)
     }
   }
@@ -287,6 +301,7 @@ function update() {
 
   if(keys[86]) {
     if(frames%5 === 0) {
+      spaceship2.audioBullet.play()
       return generateBullets(spaceship2.x + spaceship2.width - 33, spaceship2.y - 20)
     }
   }
@@ -312,6 +327,9 @@ function startGame() {
 
 function gameOver() {
   clearInterval(interval)
+  board.audio.pause()
+  car.audioBullet.pause()
+  spaceship2.audioBullet.pause()
   console.log('GAME OOOOOVVVVVEEEEEER')
 }
 
@@ -328,6 +346,7 @@ document.addEventListener('keydown', (e) => {
   e.preventDefault()
   switch (e.keyCode) {
     case 32:
+      board.audio.play()
       return startGame()
     case 39:
       return car.moveRight()
@@ -382,7 +401,10 @@ function generateObstacles() {
   if (frames % 30 === 0) {
     let obs1 = new Obstacle(randomWidth)
     obstaclesArr.push(obs1)
-    //console.log(obstaclesArr)
+  }
+  if (frames % 31 === 0) {
+    let obs1 = new Obstacle(randomWidth)
+    obstaclesArr.push(obs1)
   }
 }
 
@@ -400,6 +422,7 @@ function drawObstacles() {
 function checkCollition() {
   obstaclesArr.forEach((obstacle) => {
     if(car.isTouching(obstacle)&& obstacle.status === 1 || spaceship2.isTouching(obstacle)&& obstacle.status === 1 ) {
+      car.audio.play()
       gameOver()
       console.log('Colision de obstaculo con nave')
       console.log(obstacle,car)
