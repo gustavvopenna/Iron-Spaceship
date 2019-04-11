@@ -1,3 +1,5 @@
+
+
 let scoreDisplay1 = document.getElementById('score-player-1')
 let scoreDisplay2 = document.getElementById('score-player-2')
 let playerScoreButton = document.getElementById('player2-button')
@@ -10,12 +12,12 @@ console.log(playerScoreButton)
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 let background = 'media/background.png'
-let carImg1 = 'media/imgSaul/player-orange-2.png'
-let carImg2 = 'media/imgSaul/enemy-green-1.png'
+let carImg1 = 'media/img/player-orange-2.png'
+let carImg2 = 'media/img/enemy-green-1.png'
 let obsImg1 = 'media/asteroid.png'
 let rewardImg = 'media/Cartoon-Gold-Star.png'
 let supplieImg = 'media/gem.png'
-let bulletImg = 'media/imgSaul/laser-red-5.png'
+let bulletImg = 'media/img/laser-red-5.png'
 
 let obstaclesArr = []
 let rewardsArr = []
@@ -75,8 +77,9 @@ class Vehicle {
 
     this.audioBullet = new Audio()
     this.audioBullet.src = 'media/laser.mp3'
-    this.audioBullet.loop = true
 
+    this.audioReward = new Audio()
+    this.audioReward.src = 'media/collet-reward.mp3'
     
     this.speed = 5
     this.velX = 0
@@ -210,10 +213,6 @@ const board = new Board(background)
 const car = new Vehicle(carImg1, canvas.width / 2.2, canvas.height - 50)
 const spaceship2 = new Vehicle(carImg2, canvas.width / 2.2, canvas.height - 300)
 
-// this.x = canvas.width / 2.2
-    // this.y = canvas.height - 50
-
-
 // ---------------------------------------------------------
 // -------------------- MAIN FUNCTIONS ---------------------
 // ---------------------------------------------------------
@@ -331,6 +330,7 @@ function gameOver() {
   car.audioBullet.pause()
   spaceship2.audioBullet.pause()
   console.log('GAME OOOOOVVVVVEEEEEER')
+  gameOverMessague()
 }
 
 function reload(){
@@ -381,12 +381,6 @@ document.body.addEventListener('keyup', e => {
   keys[e.keyCode] = false
 })
 
-//Para el player 2
-// playerScoreButton.addEventListener('click', e => {
-//   console.log('butttttooooooooon')
-//   startGame()
-//   board.player = 2
-// })
 playerScoreButton.addEventListener("click", reload);
 
 
@@ -402,7 +396,7 @@ function generateObstacles() {
     let obs1 = new Obstacle(randomWidth)
     obstaclesArr.push(obs1)
   }
-  if (frames % 31 === 0) {
+  if (frames % 35 === 0) {
     let obs1 = new Obstacle(randomWidth)
     obstaclesArr.push(obs1)
   }
@@ -458,6 +452,7 @@ function checkCollitionRewards() {
     if(car.isTouchingReward(reward) && reward.status === 1 || spaceship2.isTouchingReward(reward) && reward.status === 1) {
       reward.status = 0
       console.log('Colision de reward con nave')
+      car.audioReward.play()
 
       //Change score on every catch
       if(board.player === 1) {
@@ -475,7 +470,7 @@ function checkCollitionRewards() {
 function generateSupplies() {
   let carWidth = 30
   let randomWidth = Math.floor(Math.random() * canvas.width - carWidth)
-  if (frames % 180 === 0) {
+  if (frames % 300 === 0) {
     let supplie1 = new Supplie(randomWidth)
     suppliesArr.push(supplie1)
   }
@@ -497,15 +492,12 @@ function checkCollitionSupplies() {
     if(car.isTouchingReward(supplie) && supplie.status === 1 || spaceship2.isTouchingReward(supplie) && supplie.status === 1) {
       supplie.status = 0
       console.log('Colision de suplies con nave')
+      
+      if(board.player === 1) {
+        score1 +=3
+        scoreDisplay1.innerHTML = score1
+      } 
       //return true
-
-      //Change score on every catch
-      // if(board.player === 1) {
-      //   score1++
-      //   scoreDisplay1.innerHTML = score1
-      // } else if (board.player === 2) {
-      //   scoreDisplay2.innerHTML = score2
-      // }
     }
   })
 }
@@ -540,5 +532,10 @@ function checkCollitionBullets() {
   })
 }
 
+function gameOverMessague() {
+  ctx.fillStyle = "#FF0000"
+  ctx.font = "70px Voyager";
+  ctx.fillText(`Game over X__X`, 150, canvas.height / 2)
+}
 
 

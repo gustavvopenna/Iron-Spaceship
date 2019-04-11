@@ -1,5 +1,61 @@
+@font-face {
+  font-family: "Voyager";
+  src: url("fonts/Voyager Light.otf")
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-image: url("media/background-purple.jpeg")
+}
+
+#wrapper {
+  display: flex;
+}
+
 canvas {
-  /* width: 400px;
-  height: 700px; */
-  border: 1px solid black;
+  margin-left: 30px;
+  border: 5px solid white;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h1,
+h2 {
+  font-family: "Voyager";
+  color: white;
+  text-align: center;
+  margin-top: 0;
+}
+
+#score-player-1 {
+  font-family: "Voyager";
+  font-size: 1.5em;
+  color: white;
+}
+
+#score {
+  border: 5px solid white;
+}
+
+#score-player-1 {
+  text-align: center;
+  font-size: 1.3em;
+}
+
+.box {
+  border: 5px solid white;
+  margin-left: 50px;
+}
+
+.first-box {
+  margin-bottom: 50px;
 }
