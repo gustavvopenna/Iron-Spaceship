@@ -89,16 +89,16 @@ class Vehicle {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
   }
   moveRight() {
-    if(this.x < canvas.width - 70) this.x += 10
+    if(this.x < canvas.width - this.width) this.x += 10
   }
   moveLeft() {
-    if(this.x > 70) this.x -= 10
+    if(this.x > 0) this.x -= 10
   }
   moveUp() {
-    this.y -=10
+    if (this.y > 0) this.y -=10
   }
   moveDown() {
-    this.y += 10
+    if (this.y < canvas.height - this.height) this.y += 10
   }
   isTouching(obstacle) {
     return  (this.x < obstacle.x + obstacle.width - 10) &&
@@ -210,7 +210,8 @@ class Bullet {
 // ---------------------------------------------------------
 
 const board = new Board(background)
-const car = new Vehicle(carImg1, canvas.width / 2.2, canvas.height - 50)
+//const car = new Vehicle(carImg1, canvas.width / 2.2, canvas.height - 50)
+const car = new Vehicle(carImg1, 450, 500)
 const spaceship2 = new Vehicle(carImg2, canvas.width / 2.2, canvas.height - 300)
 
 // ---------------------------------------------------------
@@ -242,30 +243,36 @@ function update() {
   frames++
 
   // Spaceship1 *car*
+  //Rigth
   if (keys[39]) {
-    if (car.velX < car.speed) {
+    if (car.velX < car.speed && car.x < canvas.width - car.width) {
       car.velX++
+      console.log('keys39')
     }
   }
 
+  //Left
   if (keys[37]) {
-    if (car.velX > -car.speed) {
+    if (car.velX > -car.speed && car.x > 0) {
       car.velX--
     }
   }
 
+  //Down
   if (keys[40]) {
-    if (car.velY < car.speed) {
+    if (car.velY < car.speed && car.y < canvas.height - car.height) {
       car.velY++
     }
   }
 
+  //Up
   if (keys[38]) {
-    if (car.velY > -car.speed) {
+    if (car.velY > -car.speed && car.y > 0 && car.y > 0) {
       car.velY--
     }
   }
 
+  //Shoot
   if(keys[16]) {
     if(frames%5 === 0) {
       car.audioBullet.play()
@@ -275,30 +282,30 @@ function update() {
 
   // Spaceship2 
   if (keys[68]) {
-    if (spaceship2.velX < spaceship2.speed) {
+    if (spaceship2.velX < spaceship2.speed && spaceship2.speed && spaceship2.x < canvas.width - spaceship2.width) {
       spaceship2.velX++
     }
   }
 
   if (keys[65]) {
-    if (spaceship2.velX > -spaceship2.speed) {
+    if (spaceship2.velX > -spaceship2.speed && spaceship2.x > 0) {
       spaceship2.velX--
     }
   }
 
   if (keys[83]) {
-    if (spaceship2.velY < spaceship2.speed) {
+    if (spaceship2.velY < spaceship2.speed && spaceship2.y < canvas.height - spaceship2.height) {
       spaceship2.velY++
     }
   }
 
   if (keys[87]) {
-    if (spaceship2.velY > -spaceship2.speed) {
+    if (spaceship2.velY > -spaceship2.speed && spaceship2.y > 0) {
       spaceship2.velY--
     }
   }
 
-  if(keys[86]) {
+  if(keys[20]) {
     if(frames%5 === 0) {
       spaceship2.audioBullet.play()
       return generateBullets(spaceship2.x + spaceship2.width - 33, spaceship2.y - 20)
@@ -349,6 +356,7 @@ document.addEventListener('keydown', (e) => {
       board.audio.play()
       return startGame()
     case 39:
+    console.log('normal39')
       return car.moveRight()
     case 37:
       return car.moveLeft()
@@ -396,7 +404,7 @@ function generateObstacles() {
     let obs1 = new Obstacle(randomWidth)
     obstaclesArr.push(obs1)
   }
-  if (frames % 35 === 0) {
+  if (frames % 31 === 0) {
     let obs1 = new Obstacle(randomWidth)
     obstaclesArr.push(obs1)
   }
