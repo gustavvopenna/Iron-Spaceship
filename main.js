@@ -305,7 +305,7 @@ function update() {
     }
   }
 
-  if(keys[20]) {
+  if(keys[9]) {
     if(frames%5 === 0) {
       spaceship2.audioBullet.play()
       return generateBullets(spaceship2.x + spaceship2.width - 33, spaceship2.y - 20)

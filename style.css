@@ -8,7 +8,9 @@
 }
 
 body {
-  background-image: url("media/background-purple.jpeg")
+  background-image: url("media/background-purple.jpeg");
+  font-family: "Voyager";
+  color: white;
 }
 
 #wrapper {
@@ -53,7 +55,7 @@ h2 {
 
 .box {
   border: 5px solid white;
-  margin-left: 50px;
+  margin-left: 30px;
 }
 
 .first-box {
@@ -88,4 +90,8 @@ body {
 .keys-info {
   margin-top: 50px;
   margin-left: 50px;
+}
+
+#how-to-play p{
+
 }
