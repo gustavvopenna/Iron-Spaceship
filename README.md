@@ -4,7 +4,7 @@ Iron Spaceship es un juego inspirado en algunos clásicos como Space Invaders y 
 
 El juego es multijugador-cooperativo.
 
-Si quieres jugar, ingresa aquí >> [https://github.com/gustavvopenna/Iron-Spaceship](https://).
+Si quieres jugar, ingresa aquí >> [https://gustavvopenna.github.io/Iron-Spaceship/](https://).
 
 ## Controles
 
